@@ -11,13 +11,15 @@ type SignupCommand struct {
 
 type SignupCommandOptions func(cmd *SignupCommand) error
 
-func NewSignUpCommand(opts ...SignupCommandOptions) contract.Command {
+func NewSignUpCommand(opts ...SignupCommandOptions) (contract.Command, error) {
 	cmd := &SignupCommand{}
 	for _, opt := range opts {
-		opt(cmd)
+		if err := opt(cmd); err != nil {
+			return nil, err
+		}
 	}
 
-	return cmd
+	return cmd, nil
 }
 
 func WithUserName(username valueobj.Username) SignupCommandOptions {
