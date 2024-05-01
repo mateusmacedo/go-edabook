@@ -1,8 +1,8 @@
 package command
 
 import (
-	"goedabook/internal/acl/user/application/contract"
 	"goedabook/internal/acl/user/domain/valueobj"
+	"goedabook/pkg/cqrs"
 )
 
 type SignupCommand struct {
@@ -11,7 +11,7 @@ type SignupCommand struct {
 
 type SignupCommandOptions func(cmd *SignupCommand) error
 
-func NewSignUpCommand(opts ...SignupCommandOptions) (contract.Command, error) {
+func NewSignUpCommand(opts ...SignupCommandOptions) (cqrs.Command, error) {
 	cmd := &SignupCommand{}
 	for _, opt := range opts {
 		if err := opt(cmd); err != nil {

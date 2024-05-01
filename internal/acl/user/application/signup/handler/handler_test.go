@@ -7,24 +7,25 @@ import (
 
 	"github.com/stretchr/testify/mock"
 
-	"goedabook/internal/acl/user/application/contract"
-	appmock "goedabook/test/mock"
+	"goedabook/pkg/cqrs"
+	"goedabook/pkg/validation"
+	_mock "goedabook/test/mock"
 )
 
 func TestSignupHandler(t *testing.T) {
 	t.Run("ensure that create a user", func(tr *testing.T) {
 		type fields struct {
-			validators []contract.Validator
+			validators []validation.Validator
 		}
 
 		type args struct {
 			ctx context.Context
-			cmd contract.Command
+			cmd cqrs.Command
 		}
 
 		type exp struct {
-			want contract.HandlerResult
-			err  contract.HandlerErr
+			want cqrs.HandlerResult
+			err  cqrs.HandlerErr
 		}
 
 		tests := []struct {
@@ -34,11 +35,11 @@ func TestSignupHandler(t *testing.T) {
 			exp    *exp
 		}{
 			{
-				name:   "should result a handler error when required field is not provided",
+				name: "should result a handler error when required field is not provided",
 				fields: &fields{
-					validators: []contract.Validator{
-						func(t *testing.T) contract.Validator {
-							v := appmock.NewValidator(t)
+					validators: []validation.Validator{
+						func(t *testing.T) validation.Validator {
+							v := _mock.NewValidator(t)
 							v.On("Validate", mock.Anything).Return(fmt.Errorf(RequiredFieldErrMsg, "username"))
 							return v
 						}(tr),
@@ -46,8 +47,8 @@ func TestSignupHandler(t *testing.T) {
 				},
 				args: &args{
 					ctx: context.Background(),
-					cmd: func(t *testing.T) contract.Command {
-						cmd := appmock.NewCommand(t)
+					cmd: func(t *testing.T) cqrs.Command {
+						cmd := _mock.NewCommand(t)
 						return cmd
 					}(tr),
 				},
@@ -57,11 +58,11 @@ func TestSignupHandler(t *testing.T) {
 				},
 			},
 			{
-				name:   "should receive a handler result when all fields are provided",
+				name: "should receive a handler result when all fields are provided",
 				fields: &fields{
-					validators: []contract.Validator{
-						func(t *testing.T) contract.Validator {
-							v := appmock.NewValidator(t)
+					validators: []validation.Validator{
+						func(t *testing.T) validation.Validator {
+							v := _mock.NewValidator(t)
 							v.On("Validate", mock.Anything).Return(nil)
 							return v
 						}(tr),
@@ -69,8 +70,8 @@ func TestSignupHandler(t *testing.T) {
 				},
 				args: &args{
 					ctx: context.Background(),
-					cmd: func(t *testing.T) contract.Command {
-						cmd := appmock.NewCommand(t)
+					cmd: func(t *testing.T) cqrs.Command {
+						cmd := _mock.NewCommand(t)
 						return cmd
 					}(tr),
 				},
@@ -91,7 +92,7 @@ func TestSignupHandler(t *testing.T) {
 					tr.Errorf("expected error: %v, got: %v", tt.exp.err, err)
 				}
 
-				if got != tt.exp.want{
+				if got != tt.exp.want {
 					tr.Errorf("expected result: %v, got: %v", tt.exp.want, got)
 				}
 			})
