@@ -1,162 +1,160 @@
-# Notes
+# Notas
 
-## 1. Introduction to Event-Driven Architectures
+## 1. Introdução às Arquiteturas Orientadas a Eventos
 
-### Patterns
+### Padrões
 
-- Event notifications
-- Event-carried state transfer
-- Event sourcing
+- Notificações de evento
+- Transferência de estado carregado por evento
+- Origem de evento
 
-#### Event notification
+#### Notificação de evento
 
-- minimum state
-- identifier **ID**
-- exact time of the occurrence
+- Estado mínimo
+- Identificador **ID**
+- Momento exato da ocorrência
 
-#### Event-carried state transfer
+#### Transferência de estado carregado por evento
 
-- push model transfer
-- identifier **ID**
-- exact time of the occurrence
-- payload with the data changes
+- Modelo de transferência push
+- Identificador **ID**
+- Momento exato da ocorrência
+- Carga com as alterações de dados
 
-#### Event sourcing
+#### Origem de evento
 
-- streams of events
-- identifier **ID**
-- payload with the data
-- exact time of the occurrence
-- recreation of the final state
+- Fluxos de eventos
+- Identificador **ID**
+- Carga com os dados
+- Momento exato da ocorrência
+- Recriação do estado final
 
-### Core Components
+### Componentes Principais
 
-- Event
-- Queue
-- Producer
-- Consumer
+- Evento
+- Fila
+- Produtor
+- Consumidor
 
-#### Event
+#### Evento
 
-- it is an occurrence that has happened in the application
-- is in the past and it is an immutable fact
-- simple value objects that contain state
-- equal to another if all the attributes are the same
+- É uma ocorrência que aconteceu na aplicação
+- Está no passado e é um fato imutável
+- Objetos de valor simples que contêm estado
+- É igual a outro se todos os atributos forem iguais
 
-#### Queue
+#### Fila
 
-referred to by a variety of terms, including bus, channel, stream, topic, and others
+Referida por uma variedade de termos, incluindo barramento, canal, fluxo, tópico e outros
 
-##### Message queue
+##### Fila de mensagens
 
-- message queue is its lack of event retention
-- events put into a message queue have a limited lifetime
-- have been consumed or have expired, they are discarded
-- useful for simple publisher/subscriber (pub/sub)
-- scenarios when the subscribers are actively running or can retrieve the events quickly
+- A falta de retenção de eventos é uma característica da fila de mensagens
+- Eventos colocados em uma fila de mensagens têm um tempo de vida limitado
+- Após terem sido consumidos ou expirado, são descartados
+- Útil para cenários simples de publicador/assinante (pub/sub)
+- Cenários em que os assinantes estão em execução ativa ou podem recuperar os eventos rapidamente
 
-##### Event streams
+##### Fluxos de eventos
 
-- When you add event retention to a message queue
-- may now read event streams starting with the earliest event
-- can begin consuming new events as they are added
+- Quando você adiciona retenção de eventos a uma fila de mensagens
+- Agora pode ler fluxos de eventos começando com o evento mais antigo
+- Pode começar a consumir novos eventos à medida que são adicionados
 
-##### Event stores
+##### Armazenamento de eventos
 
-- append-only repository for events
-- provide optimistic concurrency controls
-- not used for message communication
-- used in conjunction with event sourcing to track changes to entities
+- Repositório somente para acréscimos de eventos
+- Fornecem controles de concorrência otimista
+- Não são usados para comunicação de mensagens
+- Usados em conjunto com a origem de eventos para rastrear alterações em entidades
 
-##### Producers
+##### Produtores
 
-- publish an event representing the change into the appropriate queue
-- may include additional metadata along with the event
-- metadata is useful for tracking, performance, or monitoring
-- publish it without knowing what the consumers might be listening to
+- Publicam um evento representando a mudança na fila apropriada
+- Podem incluir metadados adicionais junto com o evento
+- Os metadados são úteis para rastreamento, desempenho ou monitoramento
+- Publicam sem saber para quem os consumidores podem estar ouvindo
 
-##### Consumers
+##### Consumidores
 
-- subscribe to and read events from queues
-- organized into groups to share the loadorganized into groups to share the load
-- can be individuals reading all events as they are published
-- reading from streams may choose to read from the beginning
+- Se inscrevem e leem eventos das filas
+- Organizados em grupos para compartilhar a carga
+- Podem ser indivíduos lendo todos os eventos conforme são publicados
+- Ler de fluxos pode optar por ler desde o início
 
-### Organizing App
+### Organizando a Aplicação
 
-#### Application Services
+#### Serviços de Aplicação
 
-- use events to communicate new states
-- triggers and notifications
-- publish them and subscribe to them
+- Usam eventos para comunicar novos estados
+- Acionadores e notificações
+- Publicam e se inscrevem neles
 
-#### API gateway services
+#### Serviços de gateway de API
 
-- RESTful API
+- API RESTful
 - Websocket
 - gRPC
-- implemented as a BFF pattern
+- Implementados como um padrão BFF
 
-#### Clients
+#### Clientes
 
-- Single Page Applicatiion
-- Mobile Application
-- Api Integration
+- Aplicação de Página Única
+- Aplicação Móvel
+- Integração de API
 
-#### Note about hexagons
+#### Nota sobre hexágonos
 
-The services in Figure have some combinations of synchronous and asynchronous communication or connections, and all are drawn as hexagons, as depicted in the following diagram:
+Os serviços na Figura têm algumas combinações de comunicação ou conexões síncronas e assíncronas, e todos são desenhados como hexágonos, conforme mostrado no seguinte diagrama:
 
-![Hexagonal representation of a service](../media/hexagon.png)
+![Representação hexagonal de um serviço](../media/hexagon.png)
 
-In a P2P connection as shown in the following diagram, the calling component, Orders, is dependent on the called component, Depot using a `Client` to make communication
+Em uma conexão P2P, como mostrado no diagrama a seguir, o componente chamador, Pedidos, depende do componente chamado, Depósito, usando um `Cliente` para fazer a comunicação
 
-![P2P communication](../media/p2p.png)
+![Comunicação P2P](../media/p2p.png)
 
-### Challenges
+### Desafios
 
-some challenges that must be overcome for the application to succeed.
+Alguns desafios que devem ser superados para o sucesso da aplicação.
 
-#### Eventual consistency
+#### Consistência eventual
 
-- Changes in the application state may not be immediately available
-- Queries may produce stale results until the change has been fully recorded
-- An asynchronous application might have to deal with eventual consistency
+- Mudanças no estado da aplicação podem não estar imediatamente disponíveis
+- Consultas podem produzir resultados desatualizados até que a mudança tenha sido totalmente registrada
+- Uma aplicação assíncrona pode ter que lidar com a consistência eventual
 
-#### Dual writes
+#### Escritas duplas
 
-- refers to any time you’re changing the application state in two or more places during an operation
-- making a change locally to a database, and then we’re publishing an event either about the event or the event itself
-- solution that will have us publish our events into the database alongside the rest of the changes to keep the state change atomic
+- Refere-se a qualquer momento em que você está alterando o estado da aplicação em dois ou mais lugares durante uma operação
+- Fazendo uma alteração local em um banco de dados e então estamos publicando um evento sobre o evento ou o evento em si
+- Solução que nos fará publicar nossos eventos no banco de dados ao lado do resto das alterações para manter a mudança de estado atômica
 
-![Outbox pattern](../media/outbox.png)
+![Padrão Outbox](../media/outbox.png)
 
-#### Distributed and asynchronous workflows
+#### Fluxos de trabalho distribuídos e assíncronos
 
-- performing complex workflows across components using events
-- making the workflow entirely asynchronous
-- component may not have the final state of the application when queried
+- Realizando fluxos de trabalho complexos entre componentes usando eventos
+- Tornando o fluxo de trabalho totalmente assíncrono
+- O componente pode não ter o estado final da aplicação quando consultado
 
 #### UX
 
-- difficult to return a final result to the user
-- Solutions include but are not limited to:
-  - polling on the client
-  - delivering the result asynchronously using WebSockets
-  - creating the expectation the user should check later for the result
+- Difícil retornar um resultado final para o usuário
+- As soluções incluem, mas não se limitam a:
+  - Polling no cliente
+  - Entregando o resultado de forma assíncrona usando WebSockets
+  - Criando a expectativa de que o usuário deve verificar posteriormente o resultado
 
-#### Component collaboration
+#### Colaboração de componentes
 
-![Component collaboratiion](../media/colaboration.png)
+![Colaboração de componentes](../media/colaboration.png)
 
-- **Choreography:** The components each individually know about the work they must do, and
-which step comes next
-- **Orchestration:** The components know very little about their role and are called on to do their
-part by a centralized orchestrator
+- **Coreografia:** Os componentes conhecem individualmente o trabalho que devem fazer e qual é o próximo passo
+- **Orquestração:** Os componentes sabem muito pouco sobre seu papel e são chamados para fazer sua parte por um orquestrador centralizado
 
-#### Debuggability
+#### Depurabilidade
 
-In Synchronous communication or P2P involves a caller and callee, always knowing what was called and what made the call
+Na comunicação síncrona ou P2P envolve um chamador e um chamado, sempre sabendo o que foi chamado e o que fez a chamada
 
-- publish an event and not necessarily knowing if anything is consuming
-- challenge in tracing an operation across the application components.
+- Publicar um evento e não necessariamente saber se algo está consumindo
+- Desafio em rastrear uma operação entre os componentes da aplicação
