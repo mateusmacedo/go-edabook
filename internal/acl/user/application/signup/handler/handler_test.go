@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/mock"
 
 	"goedabook/internal/acl/user/application/contract"
-	"goedabook/test/mocks"
+	appmock "goedabook/test/mock"
 )
 
 func TestSignupHandler(t *testing.T) {
@@ -38,7 +38,7 @@ func TestSignupHandler(t *testing.T) {
 				fields: &fields{
 					validators: []contract.Validator{
 						func(t *testing.T) contract.Validator {
-							v := mocks.NewValidator(t)
+							v := appmock.NewValidator(t)
 							v.On("Validate", mock.Anything).Return(fmt.Errorf(RequiredFieldErrMsg, "username"))
 							return v
 						}(tr),
@@ -47,7 +47,7 @@ func TestSignupHandler(t *testing.T) {
 				args: &args{
 					ctx: context.Background(),
 					cmd: func(t *testing.T) contract.Command {
-						cmd := mocks.NewCommand(t)
+						cmd := appmock.NewCommand(t)
 						return cmd
 					}(tr),
 				},
@@ -61,7 +61,7 @@ func TestSignupHandler(t *testing.T) {
 				fields: &fields{
 					validators: []contract.Validator{
 						func(t *testing.T) contract.Validator {
-							v := mocks.NewValidator(t)
+							v := appmock.NewValidator(t)
 							v.On("Validate", mock.Anything).Return(nil)
 							return v
 						}(tr),
@@ -70,7 +70,7 @@ func TestSignupHandler(t *testing.T) {
 				args: &args{
 					ctx: context.Background(),
 					cmd: func(t *testing.T) contract.Command {
-						cmd := mocks.NewCommand(t)
+						cmd := appmock.NewCommand(t)
 						return cmd
 					}(tr),
 				},
